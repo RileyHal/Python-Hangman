@@ -73,13 +73,39 @@ def getLetters(word):
 #display correctly guessed letters and underscores
 def displayWordStatus(word,lettersGuessed):
     finalString = ""
+    #if guessed letters is empty then fill with _
+    if len(lettersGuessed) == 0:
+        for z in range(len(word)):
+            finalString += "_ "
+        return finalString
+    
     for x in range(len(word)):
-        for letter in lettersGuessed:
-            if letter == word[x]:
-                finalString.append(letter)
-            else:
-                finalString.append("_")
+        for y in range(len(lettersGuessed)):
+            if lettersGuessed[y] == word[x]:
+                finalString += lettersGuessed[y] + " "
+                break
+            elif y == len(lettersGuessed)-1:
+                finalString += "_ "
+
     return finalString
+
+def checkWin(word,lettersGuessed,lettersInWord):
+    result = False
+    correctLetters = 0
+
+    if len(lettersGuessed) == 0:
+        return result
+    
+    for x in range(len(word)):
+        for y in range(len(lettersGuessed)):
+            if lettersGuessed[y] == word[x]:
+                correctLetters += 1
+                break
+    
+    if correctLetters == len(lettersInWord):
+        result = True
+
+    return result
 
 #return true if player wants to play again and false if not
 def Game():
@@ -91,8 +117,9 @@ def Game():
 
     while gameStatus:
         letterGuessed = ""
-        print(HANGMANPICS[incorrectGuesses])
-        print(displayWordStatus(selectedWord,letterGuessed))
+        print(selectedWord+HANGMANPICS[incorrectGuesses])
+        print(displayWordStatus(selectedWord,lettersGuessed))
+        print("Guessed Letters: " + str(lettersGuessed))
 
         letterGuessed = input("Enter a letter > ").lower()
 
@@ -110,16 +137,19 @@ def Game():
             lettersGuessed.append(letterGuessed)
             incorrectGuesses += 1
 
-        #check if game over
-        if incorrectGuesses == 6:
+        #check if game won
+        won = checkWin(selectedWord,lettersGuessed,lettersInWord)
+        if won == True:
+            print("Congratulations you won! The word was " + selectedWord)
+            gameStatus = False
+        elif incorrectGuesses == 6:
+            print("Sorry, you lost. The word was " + selectedWord)
             gameStatus = False
     
     #ask to play again
-    response = input("Would you like to play again? (y/n) > ")
-    if response == y:
+    response = input("Would you like to play again? (y/n) > ").lower()
+    if response == "y":
         return True
     return False
 
 Game()
-
-
